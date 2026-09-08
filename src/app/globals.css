@@ -130,17 +130,43 @@
     text-shadow: 0 0 12px rgba(65, 105, 225, 0.6);
   }
 
-  .cyber-grid {
-    background-size: 32px 32px;
-    background-image: 
-      linear-gradient(to right, rgba(0, 242, 255, 0.04) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(0, 242, 255, 0.04) 1px, transparent 1px);
+  @keyframes floatSlow1 {
+    0%, 100% {
+      transform: translate(0px, 0px) scale(1);
+    }
+    50% {
+      transform: translate(60px, 45px) scale(1.12);
+    }
   }
 
-  .light .cyber-grid {
-    background-image: 
-      linear-gradient(to right, rgba(65, 105, 225, 0.05) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(65, 105, 225, 0.05) 1px, transparent 1px);
+  @keyframes floatSlow2 {
+    0%, 100% {
+      transform: translate(0px, 0px) scale(1.05);
+    }
+    50% {
+      transform: translate(-50px, -60px) scale(0.92);
+    }
+  }
+
+  @keyframes floatSlow3 {
+    0%, 100% {
+      transform: translate(0px, 0px) scale(1);
+    }
+    50% {
+      transform: translate(45px, -40px) scale(1.15);
+    }
+  }
+
+  .animate-float-1 {
+    animation: floatSlow1 22s ease-in-out infinite;
+  }
+
+  .animate-float-2 {
+    animation: floatSlow2 28s ease-in-out infinite;
+  }
+
+  .animate-float-3 {
+    animation: floatSlow3 25s ease-in-out infinite;
   }
 }
 

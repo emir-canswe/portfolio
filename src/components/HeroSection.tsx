@@ -85,8 +85,6 @@ export default function HeroSection() {
           <source src={videoSrc} type="video/mp4" />
         </video>
 
-        {/* Cyber-Grid Overlay */}
-        <div className="absolute inset-0 cyber-grid opacity-25 mix-blend-overlay" />
 
         {/* 3D Vignette & Atmospheric Depth Mask */}
         <div

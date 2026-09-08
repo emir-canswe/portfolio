@@ -13,6 +13,9 @@ import {
   X,
   ArrowUpRight,
   Download,
+  Calendar,
+  Mail,
+  Terminal,
 } from 'lucide-react';
 
 export default function Header() {
@@ -76,74 +79,85 @@ export default function Header() {
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 py-4 px-4 sm:px-6 pointer-events-none transition-all duration-300">
-      <div className="max-w-5xl mx-auto pointer-events-auto">
+    <header className="fixed top-0 left-0 right-0 z-50 py-3 sm:py-4 px-3 sm:px-6 pointer-events-none transition-all duration-300">
+      <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4 pointer-events-auto">
         {/* =========================================================================
-            UNIFIED FLOATING GLASS ISLAND (Light & Dark Adaptive)
+            1. LEFT FLOATING ISLAND: IDENTITY & STATUS (Matches "Av. Zülfükar CAN / Danışma Açık")
             ========================================================================= */}
-        <div
-          className="flex items-center justify-between px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/85 dark:bg-[#080C16]/80 backdrop-blur-2xl border border-slate-200/90 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_12px_35px_rgba(0,0,0,0.5),0_0_20px_rgba(0,242,255,0.06)] hover:border-sky-500/30 dark:hover:border-cyan-500/25 transition-all duration-500"
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          className="flex items-center gap-3 px-3.5 sm:px-4 py-2 rounded-full bg-white/95 dark:bg-[#080C16]/90 backdrop-blur-2xl border border-slate-200/90 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] hover:border-sky-500/40 dark:hover:border-cyan-500/40 transition-all shrink-0 group"
         >
-          {/* LEFT: Clean Brand Monogram */}
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#0F172A] border border-cyan-500/40 text-cyan-400 flex items-center justify-center font-mono font-black text-xs sm:text-sm shadow-inner shrink-0 group-hover:scale-105 transition-transform">
+            {personalInfo.monogram}
+          </div>
+          <div className="flex flex-col text-left pr-1">
+            <span className="font-sans font-bold text-xs sm:text-sm text-slate-900 dark:text-white tracking-tight leading-tight">
+              Emircan CAN
+            </span>
+            <span className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-medium text-emerald-600 dark:text-emerald-400 mt-0.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+              <span>{lang === 'tr' ? 'Danışma Açık' : 'Available for Work'}</span>
+            </span>
+          </div>
+        </a>
+
+        {/* =========================================================================
+            2. CENTER FLOATING ISLAND: NAVIGATION PILL (with active green dot below item)
+            ========================================================================= */}
+        <nav className="hidden lg:flex items-center gap-6 xl:gap-8 px-7 py-3 rounded-full bg-white/95 dark:bg-[#080C16]/90 backdrop-blur-2xl border border-slate-200/90 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)]">
+          {navItems.map((item) => {
+            const isActive = activeSection === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => scrollToSection(item.id)}
+                className={`relative font-sans text-xs sm:text-[13px] py-0.5 transition-colors ${
+                  isActive
+                    ? 'text-slate-950 dark:text-white font-bold'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white font-medium'
+                }`}
+              >
+                <span>{item.label}</span>
+                {isActive && (
+                  <motion.span
+                    layoutId="activeDot"
+                    className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.9)]"
+                    transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                  />
+                )}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* =========================================================================
+            3. RIGHT FLOATING ISLAND: CONTACT, CONTROLS & "RANDEVU AL" ACTION
+            ========================================================================= */}
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          {/* Email Capsule (Light pill with green icon - like 0507 016 18 13 in ref) */}
           <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            className="group flex items-center gap-2.5 focus:outline-none"
+            href={`mailto:${socialLinks.email}`}
+            className="hidden xl:flex items-center gap-2 px-3.5 py-2.5 rounded-full bg-white/95 dark:bg-[#080C16]/90 backdrop-blur-2xl border border-slate-200/90 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)] text-xs font-mono text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+            title="Direct Email"
           >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-sky-500/15 via-blue-600/15 to-violet-500/15 dark:from-cyan-500/20 dark:via-blue-600/20 dark:to-violet-500/20 border border-sky-500/40 dark:border-cyan-400/40 flex items-center justify-center text-sky-600 dark:text-cyan-300 font-sans font-black text-xs tracking-tight group-hover:scale-105 transition-all shadow-[0_0_12px_rgba(2,132,199,0.15)] dark:shadow-[0_0_12px_rgba(0,242,255,0.2)]">
-              {personalInfo.monogram}
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="font-sans font-bold text-sm text-slate-900 dark:text-slate-100 group-hover:text-sky-600 dark:group-hover:text-cyan-300 transition-colors tracking-tight">
-                {personalInfo.name}
-              </span>
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-              </span>
-            </div>
+            <Mail className="w-3.5 h-3.5 text-emerald-500" />
+            <span className="font-medium">{socialLinks.email}</span>
           </a>
 
-          {/* CENTER: Clean Elegant Navigation Links (Desktop) */}
-          <nav className="hidden md:flex items-center gap-0.5">
-            {navItems.map((item) => {
-              const isActive = activeSection === item.id;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => scrollToSection(item.id)}
-                  className={`relative px-3.5 py-1.5 rounded-full font-sans text-[13px] font-medium transition-all ${
-                    isActive
-                      ? 'text-sky-600 dark:text-cyan-300 font-semibold'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
-                  }`}
-                >
-                  {/* Smooth magnetic pill highlight */}
-                  {isActive && (
-                    <motion.div
-                      layoutId="navPillHighlight"
-                      className="absolute inset-0 rounded-full bg-sky-500/10 dark:bg-cyan-500/15 border border-sky-500/30 dark:border-cyan-400/35 shadow-[0_0_12px_rgba(2,132,199,0.15)] dark:shadow-[0_0_15px_rgba(0,242,255,0.2)]"
-                      transition={{ type: 'spring', stiffness: 400, damping: 32 }}
-                    />
-                  )}
-                  <span className="relative z-10">{item.label}</span>
-                </button>
-              );
-            })}
-          </nav>
-
-          {/* RIGHT: Minimal Segmented Controls (Language, Theme, GitHub) */}
-          <div className="flex items-center gap-2">
-            {/* Segmented TR / EN Pill */}
+          {/* Controls Capsule: Language + Theme + GitHub */}
+          <div className="flex items-center gap-1 p-1 rounded-full bg-white/95 dark:bg-[#080C16]/90 backdrop-blur-2xl border border-slate-200/90 dark:border-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.5)]">
+            {/* Segmented TR / EN Switch */}
             <div className="flex items-center p-0.5 rounded-full bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-white/10 text-xs font-sans">
               <button
                 onClick={() => setLang('en')}
-                className={`relative px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all ${
+                className={`px-2 py-0.5 rounded-full text-[11px] font-semibold transition-all ${
                   lang === 'en'
-                    ? 'text-sky-700 dark:text-cyan-300 bg-white dark:bg-cyan-500/20 shadow-sm dark:shadow-[0_0_8px_rgba(0,242,255,0.25)]'
+                    ? 'text-sky-700 dark:text-cyan-300 bg-white dark:bg-cyan-500/20 shadow-xs'
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                 }`}
               >
@@ -151,9 +165,9 @@ export default function Header() {
               </button>
               <button
                 onClick={() => setLang('tr')}
-                className={`relative px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all ${
+                className={`px-2 py-0.5 rounded-full text-[11px] font-semibold transition-all ${
                   lang === 'tr'
-                    ? 'text-sky-700 dark:text-cyan-300 bg-white dark:bg-cyan-500/20 shadow-sm dark:shadow-[0_0_8px_rgba(0,242,255,0.25)]'
+                    ? 'text-sky-700 dark:text-cyan-300 bg-white dark:bg-cyan-500/20 shadow-xs'
                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                 }`}
               >
@@ -161,11 +175,11 @@ export default function Header() {
               </button>
             </div>
 
-            {/* Subtle Round Theme Toggle */}
+            {/* Theme Toggle Button */}
             <button
               onClick={toggleTheme}
               aria-label="Toggle Theme"
-              className="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-300 hover:bg-slate-100 dark:hover:bg-white/5 border border-slate-200 dark:border-white/5 transition-all"
+              className="w-7 h-7 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-300 hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
               title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
               {theme === 'dark' ? (
@@ -181,80 +195,100 @@ export default function Header() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub Profile"
-              className="w-8 h-8 rounded-full hidden sm:flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 border border-slate-200 dark:border-white/5 transition-all"
+              className="w-7 h-7 rounded-full hidden sm:flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
             >
               <Github className="w-3.5 h-3.5" />
             </a>
-
-            {/* Mobile Hamburger Button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle Menu"
-              className="md:hidden w-8 h-8 rounded-full flex items-center justify-center text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
-            >
-              {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-            </button>
           </div>
+
+          {/* Dark Pill CTA: Matching "📅 RANDEVU AL" in reference */}
+          <button
+            onClick={() => scrollToSection('contact')}
+            className="hidden sm:flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full bg-[#0B101D] hover:bg-[#141C30] text-white font-sans font-bold text-xs tracking-wider uppercase border border-slate-700/80 hover:border-cyan-400/50 shadow-[0_4px_16px_rgba(0,0,0,0.3)] hover:shadow-[0_0_20px_rgba(0,242,255,0.25)] active:scale-95 transition-all shrink-0"
+          >
+            <Calendar className="w-3.5 h-3.5 text-cyan-400" />
+            <span>{lang === 'tr' ? 'RANDEVU AL' : 'GET IN TOUCH'}</span>
+          </button>
+
+          {/* Mobile Hamburger Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle Menu"
+            className="lg:hidden w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-white/95 dark:bg-[#080C16]/90 border border-slate-200/90 dark:border-white/10 text-slate-800 dark:text-slate-200 shadow-md"
+          >
+            {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+          </button>
         </div>
+      </div>
 
-        {/* =========================================================================
-            MOBILE SLIDE-DOWN DRAWER (Adaptive Glass Sheet)
-            ========================================================================= */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -10, scale: 0.98 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -10, scale: 0.98 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="md:hidden mt-2 p-4 rounded-3xl bg-white/95 dark:bg-[#080C16]/95 backdrop-blur-2xl border border-slate-200/90 dark:border-white/10 shadow-[0_16px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.8)] space-y-3"
-            >
-              <div className="flex flex-col space-y-1">
-                {navItems.map((item) => {
-                  const isActive = activeSection === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => scrollToSection(item.id)}
-                      className={`flex items-center justify-between px-4 py-2.5 rounded-2xl text-left font-sans text-sm font-medium transition-all ${
-                        isActive
-                          ? 'bg-sky-500/10 text-sky-600 dark:bg-cyan-500/15 dark:text-cyan-300 font-semibold'
-                          : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
-                      }`}
-                    >
+      {/* =========================================================================
+          MOBILE SLIDE-DOWN DRAWER
+          ========================================================================= */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.98 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className="lg:hidden max-w-md mx-auto mt-2 p-4 rounded-3xl bg-white/95 dark:bg-[#080C16]/95 backdrop-blur-2xl border border-slate-200/90 dark:border-white/10 shadow-[0_16px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.8)] space-y-3 pointer-events-auto"
+          >
+            <div className="flex flex-col space-y-1">
+              {navItems.map((item) => {
+                const isActive = activeSection === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => scrollToSection(item.id)}
+                    className={`flex items-center justify-between px-4 py-2.5 rounded-2xl text-left font-sans text-sm font-medium transition-all ${
+                      isActive
+                        ? 'bg-sky-500/10 text-sky-600 dark:bg-cyan-500/15 dark:text-cyan-300 font-semibold'
+                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      {isActive && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />}
                       <span>{item.label}</span>
-                      <ArrowUpRight className={`w-3.5 h-3.5 ${isActive ? 'text-sky-600 dark:text-cyan-400' : 'text-slate-400 dark:text-slate-600'}`} />
-                    </button>
-                  );
-                })}
-              </div>
+                    </span>
+                    <ArrowUpRight className={`w-3.5 h-3.5 ${isActive ? 'text-sky-600 dark:text-cyan-400' : 'text-slate-400 dark:text-slate-600'}`} />
+                  </button>
+                );
+              })}
+            </div>
 
-              <div className="pt-3 border-t border-slate-200 dark:border-white/10 flex items-center justify-between">
+            <div className="pt-3 border-t border-slate-200 dark:border-white/10 flex flex-col gap-2">
+              <a
+                href={`mailto:${socialLinks.email}`}
+                className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-900/80 text-xs font-mono text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800"
+              >
+                <Mail className="w-3.5 h-3.5 text-emerald-500" />
+                <span>{socialLinks.email}</span>
+              </a>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => scrollToSection('contact')}
+                  className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#0B101D] text-white font-sans font-bold text-xs tracking-wider uppercase border border-slate-700"
+                >
+                  <Calendar className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>{lang === 'tr' ? 'RANDEVU AL' : 'GET IN TOUCH'}</span>
+                </button>
+
                 <a
                   href={`${basePath}/cv.pdf`}
                   download="Emircan_Can_CV.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-500/15 dark:bg-cyan-500/20 border border-sky-500/30 dark:border-cyan-400/40 text-sky-700 dark:text-cyan-300 font-sans text-xs font-semibold"
+                  className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-sky-500/15 dark:bg-cyan-500/20 border border-sky-500/30 dark:border-cyan-400/40 text-sky-700 dark:text-cyan-300 font-sans text-xs font-semibold"
                 >
                   <Download className="w-3.5 h-3.5" />
-                  <span>{uiText.hero.downloadCv[lang]}</span>
-                </a>
-
-                <a
-                  href={socialLinks.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-                >
-                  <Github className="w-3.5 h-3.5" />
-                  <span>GitHub</span>
+                  <span>CV</span>
                 </a>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

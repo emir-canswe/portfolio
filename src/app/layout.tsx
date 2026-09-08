@@ -142,7 +142,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="bg-[#0B0F1A] text-slate-100 font-sans antialiased selection:bg-cyan-500/30 selection:text-white min-h-screen flex flex-col">
+      <body className="bg-slate-50 text-slate-800 dark:bg-[#0B0F1A] dark:text-slate-100 font-sans antialiased selection:bg-cyan-500/30 selection:text-white min-h-screen flex flex-col transition-colors duration-300">
         <LanguageProvider>
           <ThemeProvider>
             <HudBackground />

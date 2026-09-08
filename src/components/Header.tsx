@@ -79,10 +79,10 @@ export default function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 py-4 px-4 sm:px-6 pointer-events-none transition-all duration-300">
       <div className="max-w-5xl mx-auto pointer-events-auto">
         {/* =========================================================================
-            UNIFIED FLOATING GLASS ISLAND (Linear / Apple inspired)
+            UNIFIED FLOATING GLASS ISLAND (Light & Dark Adaptive)
             ========================================================================= */}
         <div
-          className={`flex items-center justify-between px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#080C16]/80 backdrop-blur-2xl border border-white/10 shadow-[0_12px_35px_rgba(0,0,0,0.5),0_0_20px_rgba(0,242,255,0.06)] hover:border-cyan-500/25 transition-all duration-500`}
+          className="flex items-center justify-between px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/85 dark:bg-[#080C16]/80 backdrop-blur-2xl border border-slate-200/90 dark:border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.06)] dark:shadow-[0_12px_35px_rgba(0,0,0,0.5),0_0_20px_rgba(0,242,255,0.06)] hover:border-sky-500/30 dark:hover:border-cyan-500/25 transition-all duration-500"
         >
           {/* LEFT: Clean Brand Monogram */}
           <a
@@ -93,11 +93,11 @@ export default function Header() {
             }}
             className="group flex items-center gap-2.5 focus:outline-none"
           >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-cyan-500/20 via-blue-600/20 to-violet-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-300 font-sans font-black text-xs tracking-tight group-hover:scale-105 group-hover:border-cyan-300 transition-all shadow-[0_0_12px_rgba(0,242,255,0.2)]">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-sky-500/15 via-blue-600/15 to-violet-500/15 dark:from-cyan-500/20 dark:via-blue-600/20 dark:to-violet-500/20 border border-sky-500/40 dark:border-cyan-400/40 flex items-center justify-center text-sky-600 dark:text-cyan-300 font-sans font-black text-xs tracking-tight group-hover:scale-105 transition-all shadow-[0_0_12px_rgba(2,132,199,0.15)] dark:shadow-[0_0_12px_rgba(0,242,255,0.2)]">
               {personalInfo.monogram}
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-sans font-bold text-sm text-slate-100 group-hover:text-cyan-300 transition-colors tracking-tight">
+              <span className="font-sans font-bold text-sm text-slate-900 dark:text-slate-100 group-hover:text-sky-600 dark:group-hover:text-cyan-300 transition-colors tracking-tight">
                 {personalInfo.name}
               </span>
               <span className="relative flex h-2 w-2">
@@ -117,15 +117,15 @@ export default function Header() {
                   onClick={() => scrollToSection(item.id)}
                   className={`relative px-3.5 py-1.5 rounded-full font-sans text-[13px] font-medium transition-all ${
                     isActive
-                      ? 'text-cyan-300 font-semibold'
-                      : 'text-slate-400 hover:text-slate-100'
+                      ? 'text-sky-600 dark:text-cyan-300 font-semibold'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
                   }`}
                 >
                   {/* Smooth magnetic pill highlight */}
                   {isActive && (
                     <motion.div
                       layoutId="navPillHighlight"
-                      className="absolute inset-0 rounded-full bg-cyan-500/15 border border-cyan-400/35 shadow-[0_0_15px_rgba(0,242,255,0.2)]"
+                      className="absolute inset-0 rounded-full bg-sky-500/10 dark:bg-cyan-500/15 border border-sky-500/30 dark:border-cyan-400/35 shadow-[0_0_12px_rgba(2,132,199,0.15)] dark:shadow-[0_0_15px_rgba(0,242,255,0.2)]"
                       transition={{ type: 'spring', stiffness: 400, damping: 32 }}
                     />
                   )}
@@ -138,13 +138,13 @@ export default function Header() {
           {/* RIGHT: Minimal Segmented Controls (Language, Theme, GitHub) */}
           <div className="flex items-center gap-2">
             {/* Segmented TR / EN Pill */}
-            <div className="flex items-center p-0.5 rounded-full bg-slate-900/90 border border-white/10 text-xs font-sans">
+            <div className="flex items-center p-0.5 rounded-full bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-white/10 text-xs font-sans">
               <button
                 onClick={() => setLang('en')}
                 className={`relative px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all ${
                   lang === 'en'
-                    ? 'text-cyan-300 bg-cyan-500/20 shadow-[0_0_8px_rgba(0,242,255,0.25)]'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'text-sky-700 dark:text-cyan-300 bg-white dark:bg-cyan-500/20 shadow-sm dark:shadow-[0_0_8px_rgba(0,242,255,0.25)]'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                 }`}
               >
                 EN
@@ -153,8 +153,8 @@ export default function Header() {
                 onClick={() => setLang('tr')}
                 className={`relative px-2.5 py-1 rounded-full text-[11px] font-semibold transition-all ${
                   lang === 'tr'
-                    ? 'text-cyan-300 bg-cyan-500/20 shadow-[0_0_8px_rgba(0,242,255,0.25)]'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'text-sky-700 dark:text-cyan-300 bg-white dark:bg-cyan-500/20 shadow-sm dark:shadow-[0_0_8px_rgba(0,242,255,0.25)]'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
                 }`}
               >
                 TR
@@ -165,13 +165,13 @@ export default function Header() {
             <button
               onClick={toggleTheme}
               aria-label="Toggle Theme"
-              className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-amber-300 hover:bg-white/5 border border-white/5 transition-all"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-amber-500 dark:hover:text-amber-300 hover:bg-slate-100 dark:hover:bg-white/5 border border-slate-200 dark:border-white/5 transition-all"
               title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
               {theme === 'dark' ? (
                 <Sun className="w-3.5 h-3.5 text-amber-400" />
               ) : (
-                <Moon className="w-3.5 h-3.5 text-cyan-400" />
+                <Moon className="w-3.5 h-3.5 text-sky-600" />
               )}
             </button>
 
@@ -181,7 +181,7 @@ export default function Header() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub Profile"
-              className="w-8 h-8 rounded-full hidden sm:flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 border border-white/5 transition-all"
+              className="w-8 h-8 rounded-full hidden sm:flex items-center justify-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 border border-slate-200 dark:border-white/5 transition-all"
             >
               <Github className="w-3.5 h-3.5" />
             </a>
@@ -190,7 +190,7 @@ export default function Header() {
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle Menu"
-              className="md:hidden w-8 h-8 rounded-full flex items-center justify-center text-slate-300 hover:text-white hover:bg-white/10 transition-colors"
+              className="md:hidden w-8 h-8 rounded-full flex items-center justify-center text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
             >
               {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
@@ -198,7 +198,7 @@ export default function Header() {
         </div>
 
         {/* =========================================================================
-            MOBILE SLIDE-DOWN DRAWER (Minimal Glass Sheet)
+            MOBILE SLIDE-DOWN DRAWER (Adaptive Glass Sheet)
             ========================================================================= */}
         <AnimatePresence>
           {mobileMenuOpen && (
@@ -207,7 +207,7 @@ export default function Header() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.98 }}
               transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="md:hidden mt-2 p-4 rounded-3xl bg-[#080C16]/95 backdrop-blur-2xl border border-white/10 shadow-[0_16px_40px_rgba(0,0,0,0.8)] space-y-3"
+              className="md:hidden mt-2 p-4 rounded-3xl bg-white/95 dark:bg-[#080C16]/95 backdrop-blur-2xl border border-slate-200/90 dark:border-white/10 shadow-[0_16px_40px_rgba(0,0,0,0.12)] dark:shadow-[0_16px_40px_rgba(0,0,0,0.8)] space-y-3"
             >
               <div className="flex flex-col space-y-1">
                 {navItems.map((item) => {
@@ -218,24 +218,24 @@ export default function Header() {
                       onClick={() => scrollToSection(item.id)}
                       className={`flex items-center justify-between px-4 py-2.5 rounded-2xl text-left font-sans text-sm font-medium transition-all ${
                         isActive
-                          ? 'bg-cyan-500/15 text-cyan-300 font-semibold'
-                          : 'text-slate-300 hover:bg-white/5 hover:text-white'
+                          ? 'bg-sky-500/10 text-sky-600 dark:bg-cyan-500/15 dark:text-cyan-300 font-semibold'
+                          : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
                       }`}
                     >
                       <span>{item.label}</span>
-                      <ArrowUpRight className={`w-3.5 h-3.5 ${isActive ? 'text-cyan-400' : 'text-slate-600'}`} />
+                      <ArrowUpRight className={`w-3.5 h-3.5 ${isActive ? 'text-sky-600 dark:text-cyan-400' : 'text-slate-400 dark:text-slate-600'}`} />
                     </button>
                   );
                 })}
               </div>
 
-              <div className="pt-3 border-t border-white/10 flex items-center justify-between">
+              <div className="pt-3 border-t border-slate-200 dark:border-white/10 flex items-center justify-between">
                 <a
                   href={`${basePath}/cv.pdf`}
                   download="Emircan_Can_CV.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/20 border border-cyan-400/40 text-cyan-300 font-sans text-xs font-semibold"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-500/15 dark:bg-cyan-500/20 border border-sky-500/30 dark:border-cyan-400/40 text-sky-700 dark:text-cyan-300 font-sans text-xs font-semibold"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>{uiText.hero.downloadCv[lang]}</span>
@@ -245,7 +245,7 @@ export default function Header() {
                   href={socialLinks.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-white"
+                  className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
                 >
                   <Github className="w-3.5 h-3.5" />
                   <span>GitHub</span>

@@ -63,6 +63,19 @@
   ::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 242, 255, 0.5);
   }
+
+  html.light ::-webkit-scrollbar-track {
+    background: #F1F5F9;
+  }
+
+  html.light ::-webkit-scrollbar-thumb {
+    background: rgba(2, 132, 199, 0.35);
+    border-radius: 4px;
+  }
+
+  html.light ::-webkit-scrollbar-thumb:hover {
+    background: rgba(2, 132, 199, 0.6);
+  }
 }
 
 @layer utilities {
@@ -82,15 +95,17 @@
     box-shadow: 0 0 25px rgba(0, 242, 255, 0.15), inset 0 0 15px rgba(0, 242, 255, 0.05);
   }
 
-  .light .hud-glass {
-    background: rgba(255, 255, 255, 0.85);
-    border: 1px solid rgba(65, 105, 225, 0.2);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  .light .hud-glass,
+  html.light .hud-glass {
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
   }
 
-  .light .hud-glass-hover:hover {
-    border-color: rgba(65, 105, 225, 0.5);
-    box-shadow: 0 8px 30px rgba(65, 105, 225, 0.15);
+  .light .hud-glass-hover:hover,
+  html.light .hud-glass-hover:hover {
+    border-color: rgba(2, 132, 199, 0.45);
+    box-shadow: 0 12px 35px rgba(2, 132, 199, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
   }
 
   .hud-corner-brackets {
@@ -106,6 +121,11 @@
     border-color: rgba(0, 242, 255, 0.6);
     pointer-events: none;
     transition: border-color 0.3s ease;
+  }
+
+  html.light .hud-corner-brackets::before,
+  html.light .hud-corner-brackets::after {
+    border-color: rgba(2, 132, 199, 0.55);
   }
 
   .hud-corner-brackets::before {

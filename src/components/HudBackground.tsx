@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function HudBackground() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const { theme } = useTheme();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -21,31 +23,30 @@ export default function HudBackground() {
       vx: number;
       vy: number;
       radius: number;
-      color: string;
+      colorDark: string;
+      colorLight: string;
       alpha: number;
       pulseSpeed: number;
     }
 
-    const particleColors = [
-      '0, 242, 255',    // Neon Cyan
-      '65, 105, 225',   // Electric Blue
-      '138, 43, 226',   // Deep Violet
-      '16, 185, 129',   // Emerald
-    ];
+    const darkColors = ['0, 242, 255', '65, 105, 225', '138, 43, 226', '16, 185, 129'];
+    const lightColors = ['2, 132, 199', '79, 70, 229', '147, 51, 234', '5, 150, 105'];
 
     // Responsive particle count
-    const particleCount = Math.min(Math.floor((width * height) / 20000), 65);
+    const particleCount = Math.min(Math.floor((width * height) / 22000), 55);
     const particles: Particle[] = [];
 
     for (let i = 0; i < particleCount; i++) {
+      const idx = Math.floor(Math.random() * darkColors.length);
       particles.push({
         x: Math.random() * width,
         y: Math.random() * height,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
         radius: Math.random() * 1.8 + 0.8,
-        color: particleColors[Math.floor(Math.random() * particleColors.length)],
-        alpha: Math.random() * 0.5 + 0.3,
+        colorDark: darkColors[idx],
+        colorLight: lightColors[idx],
+        alpha: Math.random() * 0.4 + 0.25,
         pulseSpeed: Math.random() * 0.02 + 0.008,
       });
     }
@@ -70,6 +71,7 @@ export default function HudBackground() {
     // Render loop
     const render = () => {
       ctx.clearRect(0, 0, width, height);
+      const isLight = document.documentElement.classList.contains('light');
 
       // Draw and update animated particle constellation
       for (let i = 0; i < particles.length; i++) {
@@ -83,18 +85,19 @@ export default function HudBackground() {
 
         // Pulse alpha
         p.alpha += Math.sin(Date.now() * p.pulseSpeed) * 0.005;
-        const currentAlpha = Math.max(0.15, Math.min(0.85, p.alpha));
+        const currentAlpha = Math.max(0.18, Math.min(0.8, p.alpha));
+        const color = isLight ? p.colorLight : p.colorDark;
 
         // Draw particle dot
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${p.color}, ${currentAlpha})`;
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = `rgba(${p.color}, 0.8)`;
+        ctx.fillStyle = `rgba(${color}, ${currentAlpha})`;
+        ctx.shadowBlur = isLight ? 4 : 8;
+        ctx.shadowColor = `rgba(${color}, 0.6)`;
         ctx.fill();
-        ctx.shadowBlur = 0; // Reset for performance
+        ctx.shadowBlur = 0;
 
-        // Connect nearby particles with glowing cyber filaments
+        // Connect nearby particles
         for (let j = i + 1; j < particles.length; j++) {
           const p2 = particles[j];
           const dx = p.x - p2.x;
@@ -102,26 +105,30 @@ export default function HudBackground() {
           const dist = Math.sqrt(dx * dx + dy * dy);
 
           if (dist < 130) {
-            const lineAlpha = (1 - dist / 130) * 0.22;
+            const lineAlpha = (1 - dist / 130) * (isLight ? 0.18 : 0.22);
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(0, 242, 255, ${lineAlpha})`;
-            ctx.lineWidth = 0.8;
+            ctx.strokeStyle = isLight
+              ? `rgba(2, 132, 199, ${lineAlpha})`
+              : `rgba(0, 242, 255, ${lineAlpha})`;
+            ctx.lineWidth = 0.75;
             ctx.stroke();
           }
         }
 
-        // Gentle interactive mouse magnetic aura
+        // Interactive mouse magnetic tether
         const mdx = p.x - mouseX;
         const mdy = p.y - mouseY;
         const mdist = Math.sqrt(mdx * mdx + mdy * mdy);
-        if (mdist < 160) {
-          const mAlpha = (1 - mdist / 160) * 0.35;
+        if (mdist < 150) {
+          const mAlpha = (1 - mdist / 150) * (isLight ? 0.28 : 0.35);
           ctx.beginPath();
           ctx.moveTo(p.x, p.y);
           ctx.lineTo(mouseX, mouseY);
-          ctx.strokeStyle = `rgba(0, 242, 255, ${mAlpha})`;
+          ctx.strokeStyle = isLight
+            ? `rgba(2, 132, 199, ${mAlpha})`
+            : `rgba(0, 242, 255, ${mAlpha})`;
           ctx.lineWidth = 1;
           ctx.stroke();
         }
@@ -141,23 +148,23 @@ export default function HudBackground() {
 
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
-      {/* Deep Rich Cosmic Base */}
-      <div className="absolute inset-0 bg-[#070A12]" />
+      {/* Background Base with Smooth Theme Transition */}
+      <div className="absolute inset-0 bg-[#F8FAFC] dark:bg-[#070A12] transition-colors duration-500" />
 
-      {/* Floating Ambient Glowing Nebulae (Slow Organic Breathing Orbs) */}
-      <div className="absolute top-[-10%] left-[15%] w-[650px] h-[650px] rounded-full bg-cyan-500/12 blur-[140px] animate-float-1" />
-      <div className="absolute top-[40%] right-[-10%] w-[700px] h-[700px] rounded-full bg-violet-600/12 blur-[160px] animate-float-2" />
-      <div className="absolute bottom-[-15%] left-[20%] w-[750px] h-[750px] rounded-full bg-blue-600/12 blur-[150px] animate-float-3" />
-      <div className="absolute top-[70%] right-[30%] w-[500px] h-[500px] rounded-full bg-emerald-500/8 blur-[140px] animate-float-1" />
+      {/* Floating Ambient Glowing Nebulae (Adapted for both Light and Dark) */}
+      <div className="absolute top-[-10%] left-[15%] w-[650px] h-[650px] rounded-full bg-cyan-400/20 dark:bg-cyan-500/12 blur-[140px] animate-float-1 transition-all duration-700" />
+      <div className="absolute top-[40%] right-[-10%] w-[700px] h-[700px] rounded-full bg-violet-400/18 dark:bg-violet-600/12 blur-[160px] animate-float-2 transition-all duration-700" />
+      <div className="absolute bottom-[-15%] left-[20%] w-[750px] h-[750px] rounded-full bg-blue-400/18 dark:bg-blue-600/12 blur-[150px] animate-float-3 transition-all duration-700" />
+      <div className="absolute top-[70%] right-[30%] w-[500px] h-[500px] rounded-full bg-emerald-400/15 dark:bg-emerald-500/8 blur-[140px] animate-float-1 transition-all duration-700" />
 
       {/* Interactive Constellation / Neural Starfield Canvas */}
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full opacity-70"
+        className="absolute inset-0 w-full h-full opacity-65 dark:opacity-75 transition-opacity"
       />
 
-      {/* Faint Subtle Scanline Pulse */}
-      <div className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-cyan-400/25 to-transparent animate-scanline" />
+      {/* Subtle Scanline Bar */}
+      <div className="absolute inset-x-0 h-px bg-gradient-to-r from-transparent via-cyan-500/30 dark:via-cyan-400/25 to-transparent animate-scanline" />
     </div>
   );
 }

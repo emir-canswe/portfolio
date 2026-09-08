@@ -96,8 +96,8 @@ export default function HeroSection() {
         />
 
         {/* Top and Bottom Gradient Blends for Seamless Section Transitions */}
-        <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-[#0B0F1A] to-transparent" />
-        <div className="absolute bottom-0 inset-x-0 h-40 bg-gradient-to-t from-[#0B0F1A] via-[#0B0F1A]/80 to-transparent" />
+        <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-slate-50/90 dark:from-[#0B0F1A] to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 inset-x-0 h-44 bg-gradient-to-t from-slate-50 via-slate-50/80 to-transparent dark:from-[#0B0F1A] dark:via-[#0B0F1A]/80 pointer-events-none" />
 
         {/* Ambient Cyan / Electric Blue Neon Haze */}
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-cyan-500/10 blur-[130px] rounded-full pointer-events-none" />

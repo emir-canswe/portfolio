@@ -127,9 +127,16 @@ export default function RootLayout({
     ],
   };
 
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+
   return (
     <html lang="en" className={`dark ${inter.variable} ${jetbrainsMono.variable}`}>
       <head>
+        <link rel="icon" href={`${basePath}/favicon.ico`} sizes="any" />
+        <link rel="icon" type="image/svg+xml" href={`${basePath}/icon.svg`} />
+        <link rel="icon" type="image/png" sizes="32x32" href={`${basePath}/favicon-32x32.png`} />
+        <link rel="icon" type="image/png" sizes="16x16" href={`${basePath}/favicon-16x16.png`} />
+        <link rel="apple-touch-icon" href={`${basePath}/icon.svg`} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

@@ -134,7 +134,7 @@ export default function HeroSection() {
 
           {/* Download CV CTA */}
           <a
-            href="/cv.pdf"
+            href={`${process.env.NEXT_PUBLIC_BASE_PATH || ''}/cv.pdf`}
             download="Emircan_Can_CV.pdf"
             target="_blank"
             rel="noopener noreferrer"

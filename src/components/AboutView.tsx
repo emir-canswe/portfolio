@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
 import { achievements, experiences, personalInfo, skillCategories, socialLinks, ui } from '@/data/content';
+import SplitReveal from './SplitReveal';
 
 const ease = [0.19, 1, 0.22, 1] as const;
 
@@ -39,14 +40,13 @@ export default function AboutView() {
 
   return (
     <div className="scrollbar-none h-full overflow-y-auto px-5 pb-32 pt-[96px] s:px-10 s:pt-[22vh]">
-      <motion.p
+      <SplitReveal
+        text={ui.about.statement[lang]}
+        delay={0.15}
+        stagger={0.025}
+        duration={1.2}
         className="max-w-[22ch] text-[clamp(30px,4.6vw,72px)] font-normal leading-[1.02] tracking-tightest s:max-w-[24ch]"
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.2, ease }}
-      >
-        {ui.about.statement[lang]}
-      </motion.p>
+      />
 
       <div className="mt-20 s:mt-32">
         <Row label={ui.about.profile[lang]}>
@@ -72,7 +72,7 @@ export default function AboutView() {
             {experiences.map((x) => (
               <li key={x.company} className="grid gap-4 s:grid-cols-2 s:gap-10">
                 <div>
-                  <p className="text-[clamp(22px,2vw,30px)] leading-none tracking-tightest">{x.company}</p>
+                  <SplitReveal text={x.company} inView className="text-[clamp(22px,2vw,30px)] leading-none tracking-tightest" />
                   <p className="mt-2">{x.role[lang]}</p>
                   <p className="opacity-50">
                     {x.period[lang]} · {x.type[lang]} · {x.location}
@@ -122,9 +122,10 @@ export default function AboutView() {
           <p className="opacity-60">{ui.about.contactLine[lang]}</p>
           <a
             href={`mailto:${socialLinks.email}`}
-            className="mt-4 block break-all text-[clamp(28px,4.6vw,72px)] leading-none tracking-tightest transition-opacity duration-500 hover:opacity-60"
+            className="group mt-4 block break-all text-[clamp(28px,4.6vw,72px)] leading-none tracking-tightest"
           >
-            {socialLinks.email}
+            <SplitReveal as="span" text={socialLinks.email} inView className="block transition-opacity duration-500 group-hover:opacity-60" />
+            <span className="mt-3 block h-px origin-left scale-x-0 bg-white transition-transform duration-700 ease-expo group-hover:scale-x-100" />
           </a>
           <div className="mt-8 flex flex-wrap gap-2">
             <button onClick={copy} className="rounded-full bg-white px-4 py-2 text-black transition-opacity hover:opacity-80">

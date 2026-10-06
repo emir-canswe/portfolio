@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
 import { personalInfo, socialLinks, ui } from '@/data/content';
+import SplitReveal from './SplitReveal';
 
 export type View = 'featured' | 'index' | 'about';
 
@@ -61,8 +62,8 @@ export default function Frame({ view, onNavigate, ready }: FrameProps) {
                 transition={{ duration: 0.6, ease }}
                 className="hidden overflow-hidden s:block"
               >
-                <p className="mt-3 max-w-[27rem] leading-[1.45] opacity-60">{ui.intro[lang]}</p>
-                <p className="mt-3 opacity-60">{ui.credits[lang]}</p>
+                <SplitReveal text={ui.intro[lang]} play={ready} delay={0.25} stagger={0.012} className="mt-3 max-w-[27rem] leading-[1.45] opacity-60" />
+                <SplitReveal text={ui.credits[lang]} play={ready} delay={0.6} stagger={0.02} className="mt-3 opacity-60" />
               </motion.div>
             )}
           </AnimatePresence>

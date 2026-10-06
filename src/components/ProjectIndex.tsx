@@ -53,18 +53,26 @@ export default function ProjectIndex({ onOpen }: { onOpen: (id: string) => void 
           <motion.li
             key={p.id}
             className="index-row"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.1 + i * 0.04, ease }}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '0px 0px -5% 0px' }}
+            transition={{ duration: 0.9, delay: Math.min(i, 8) * 0.04, ease }}
           >
             <button
               onClick={() => onOpen(p.id)}
               onMouseEnter={() => setHovered(p.id)}
               data-cursor="view"
-              className="grid w-full grid-cols-[2.5rem_1fr_auto] items-baseline transition-opacity duration-500 ease-expo gap-x-4 border-b border-white/15 py-4 text-left s:grid-cols-[4rem_1.2fr_1fr_1.4fr_2rem] s:py-5"
+              className="group grid w-full grid-cols-[2.5rem_1fr_auto] items-center s:items-baseline transition-opacity duration-500 ease-expo gap-x-4 border-b border-white/15 py-4 text-left s:grid-cols-[4rem_1.2fr_1fr_1.4fr_2rem] s:py-5"
             >
               <span className="text-[12px] tabular-nums opacity-50">{pad(i + 1)}</span>
-              <span className="text-[22px] leading-none tracking-tightest s:text-[clamp(22px,2.4vw,36px)]">{p.title}</span>
+              <span className="flex items-center gap-3">
+                <span className="h-12 w-[2.4rem] flex-none overflow-hidden rounded-[6px] s:hidden">
+                  <ProjectCover id={p.id} className="h-full w-full" />
+                </span>
+                <span className="text-[22px] leading-none tracking-tightest transition-transform duration-700 ease-expo s:text-[clamp(22px,2.4vw,36px)] s:group-hover:translate-x-3">
+                  {p.title}
+                </span>
+              </span>
               <span className="hidden opacity-60 s:block">{p.category}</span>
               <span className="hidden truncate opacity-60 s:block">{p.tech.slice(0, 3).join(', ')}</span>
               <span className="text-right opacity-60">{p.demoUrl || p.githubUrl ? '↗' : '+'}</span>

@@ -1,11 +1,12 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
 import { personalInfo, projects, socialLinks, ui } from '@/data/content';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import ProjectCover from './ProjectCover';
+import SplitReveal from './SplitReveal';
 
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -55,6 +56,49 @@ export default function FeaturedRail({ ready, onOpen }: RailProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
+  const mobileRef = useRef<HTMLDivElement>(null);
+  const mobileBarRef = useRef<HTMLDivElement>(null);
+  const [mobileActive, setMobileActive] = useState(-1);
+
+  // Mobile: scroll-linked cover parallax, progress bar and "now viewing" pill.
+  useEffect(() => {
+    if (desktop || !ready) return;
+    const el = mobileRef.current;
+    if (!el) return;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let raf = 0;
+    let last = -2;
+    const update = () => {
+      raf = 0;
+      const vh = window.innerHeight;
+      const max = el.scrollHeight - el.clientHeight;
+      if (mobileBarRef.current) mobileBarRef.current.style.transform = `scaleX(${max > 0 ? el.scrollTop / max : 0})`;
+      let current = -1;
+      el.querySelectorAll<HTMLElement>('[data-card]').forEach((card, i) => {
+        const r = card.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > vh) return;
+        const ratio = (r.top + r.height / 2 - vh / 2) / vh;
+        const inner = card.querySelector<HTMLElement>('[data-inner]');
+        if (inner && !reduced) inner.style.transform = `translate3d(0, ${ratio * -36}px, 0)`;
+        if (el.scrollTop > 120 && r.top < vh * 0.55 && r.bottom > vh * 0.45) current = i;
+      });
+      if (current !== last) {
+        last = current;
+        setMobileActive(current);
+      }
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    el.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      el.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, [desktop, ready]);
 
   useEffect(() => {
     if (!desktop) return;
@@ -135,21 +179,16 @@ export default function FeaturedRail({ ready, onOpen }: RailProps) {
       const skew = reduced ? 0 : clamp(vel * -0.06, -6, 6);
       const scale = reduced ? 1 : 1 - clamp(Math.abs(vel) * 0.0015, 0, 0.06);
 
-      let nearest = 0;
-      let best = Infinity;
       cards.forEach((card, i) => {
         const c = centers[i] - s.current;
         card.style.transform = `skewX(${skew}deg) scale(${scale})`;
         const inner = inners[i];
         if (inner && !reduced) inner.style.transform = `translate3d(${((c - vw / 2) / vw) * -36}px,0,0)`;
-        const dist = Math.abs(c - vw / 2);
-        if (dist < best) {
-          best = dist;
-          nearest = i;
-        }
       });
+      const progress = s.max ? s.current / s.max : 0;
+      const nearest = Math.round(progress * (cards.length - 1));
 
-      if (barRef.current) barRef.current.style.transform = `scaleX(${s.max ? s.current / s.max : 0})`;
+      if (barRef.current) barRef.current.style.transform = `scaleX(${progress})`;
       if (nearest !== s.active) {
         s.active = nearest;
         setActive(nearest);
@@ -186,21 +225,89 @@ export default function FeaturedRail({ ready, onOpen }: RailProps) {
 
   if (!desktop) {
     return (
-      <div className="scrollbar-none h-full overflow-y-auto px-5 pb-10 pt-[72px]">
-        <p className="leading-[1.45] opacity-60">{ui.intro[lang]}</p>
-        <p className="mt-3 opacity-60">{ui.credits[lang]}</p>
-        <div className="rail mt-8 flex flex-col gap-2.5">{cards}</div>
-        <div className="mt-10 flex flex-col gap-1.5">
-          <span className="flex items-center gap-2">
+      <div ref={mobileRef} className="scrollbar-none h-full overflow-y-auto overscroll-contain px-5 pb-28 pt-[76px]">
+        <SplitReveal
+          as="h1"
+          text={personalInfo.name}
+          play={ready}
+          stagger={0.08}
+          duration={1.3}
+          className="text-[clamp(56px,18vw,96px)] font-normal leading-[0.88] tracking-tightest"
+        />
+        <SplitReveal text={personalInfo.roles[lang].join(' · ')} play={ready} delay={0.35} stagger={0.03} className="mt-4 opacity-50" />
+        <SplitReveal text={ui.intro[lang]} play={ready} delay={0.5} stagger={0.01} className="mt-6 leading-[1.45] opacity-70" />
+
+        <motion.div
+          className="mt-12 flex items-center justify-between border-t border-white/15 pt-3 text-[12px] opacity-50"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: ready ? 0.5 : 0 }}
+          transition={{ duration: 1, delay: 0.8 }}
+        >
+          <span>{ui.nav.featured[lang]}</span>
+          <span>{pad(projects.length)}</span>
+        </motion.div>
+
+        {ready && (
+          <div className="rail mt-3 flex flex-col gap-3">
+            {projects.map((p, i) => (
+              <motion.div
+                key={p.id}
+                initial={{ clipPath: 'inset(14% 5% 0% 5% round 16px)', y: 60, opacity: 0.2 }}
+                whileInView={{ clipPath: 'inset(0% 0% 0% 0% round 16px)', y: 0, opacity: 1 }}
+                viewport={{ once: true, margin: '0px 0px -12% 0px' }}
+                transition={{ duration: 1.2, ease: [0.19, 1, 0.22, 1] }}
+                className="active:scale-[0.98] transition-transform duration-300"
+              >
+                <Card index={i} onOpen={onOpen} />
+              </motion.div>
+            ))}
+          </div>
+        )}
+
+        <div className="mt-20 border-t border-white/15 pt-6">
+          <span className="flex items-center gap-2 opacity-70">
             <span className="pulse-dot size-1.5 rounded-full bg-[#3ddc84]" />
             {personalInfo.status[lang]}
           </span>
-          <a href={`mailto:${socialLinks.email}`}>{socialLinks.email}</a>
-          <div className="mt-2 flex gap-5 opacity-60">
+          <a href={`mailto:${socialLinks.email}`} className="mt-4 block break-all text-[clamp(26px,8vw,40px)] leading-none tracking-tightest">
+            <SplitReveal as="span" text={socialLinks.email} inView stagger={0} className="block" />
+          </a>
+          <div className="mt-6 flex gap-5 opacity-60">
             <a href={socialLinks.github} target="_blank" rel="noreferrer">GitHub</a>
             <a href={socialLinks.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
             <a href={socialLinks.instagram} target="_blank" rel="noreferrer">Instagram</a>
           </div>
+        </div>
+
+        {/* Floating "now viewing" pill + scroll progress */}
+        <AnimatePresence>
+          {mobileActive >= 0 && (
+            <motion.div
+              className="pointer-events-none fixed inset-x-0 bottom-5 z-30 flex justify-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={{ duration: 0.5, ease: [0.19, 1, 0.22, 1] }}
+            >
+              <span className="flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-[13px] text-black shadow-[0_8px_30px_rgba(0,0,0,0.5)]">
+                <span className="tabular-nums opacity-50">{pad(mobileActive + 1)}/{pad(projects.length)}</span>
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.span
+                    key={mobileActive}
+                    initial={{ y: 8, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -8, opacity: 0 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    {projects[mobileActive].title}
+                  </motion.span>
+                </AnimatePresence>
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <div className="fixed inset-x-0 bottom-0 z-30 h-[2px] bg-white/10">
+          <div ref={mobileBarRef} className="h-full origin-left bg-white" style={{ transform: 'scaleX(0)' }} />
         </div>
       </div>
     );
@@ -223,6 +330,12 @@ export default function FeaturedRail({ ready, onOpen }: RailProps) {
           <span ref={barRef} className="absolute inset-0 origin-left bg-white" style={{ transform: 'scaleX(0)' }} />
         </span>
         <span className="w-5 tabular-nums opacity-50">{pad(projects.length)}</span>
+        <span
+          className="absolute left-1/2 top-[-22px] -translate-x-1/2 whitespace-nowrap opacity-40 transition-opacity duration-700"
+          style={{ opacity: active === 0 ? 0.4 : 0 }}
+        >
+          {ui.dragHint[lang]} →
+        </span>
       </motion.div>
     </div>
   );

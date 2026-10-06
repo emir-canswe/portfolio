@@ -73,7 +73,7 @@ export default function Portfolio() {
         >
           {view === 'featured' && <FeaturedRail ready={ready} onOpen={open} />}
           {view === 'index' && <ProjectIndex onOpen={open} />}
-          {view === 'about' && <AboutView />}
+          {view === 'about' && <AboutView onOpen={open} />}
         </motion.main>
       </AnimatePresence>
 

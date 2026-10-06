@@ -1,26 +1,16 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter, JetBrains_Mono } from 'next/font/google';
+import { Inter_Tight } from 'next/font/google';
 import './globals.css';
 import { LanguageProvider } from '@/context/LanguageContext';
-import { ThemeProvider } from '@/context/ThemeContext';
-import HudBackground from '@/components/HudBackground';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
+const sans = Inter_Tight({
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-sans',
   display: 'swap',
 });
 
 export const viewport: Viewport = {
-  themeColor: '#0B0F1A',
+  themeColor: '#000000',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
@@ -130,7 +120,7 @@ export default function RootLayout({
   const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
   return (
-    <html lang="en" className={`dark ${inter.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={sans.variable}>
       <head>
         <link rel="icon" href={`${basePath}/favicon.ico`} sizes="any" />
         <link rel="icon" type="image/svg+xml" href={`${basePath}/icon.svg`} />
@@ -142,15 +132,9 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="bg-slate-50 text-slate-800 dark:bg-[#0B0F1A] dark:text-slate-100 font-sans antialiased selection:bg-cyan-500/30 selection:text-white min-h-screen flex flex-col transition-colors duration-300">
-        <LanguageProvider>
-          <ThemeProvider>
-            <HudBackground />
-            <Header />
-            <main className="flex-grow">{children}</main>
-            <Footer />
-          </ThemeProvider>
-        </LanguageProvider>
+      <body className="bg-black font-sans text-white antialiased">
+        <LanguageProvider>{children}</LanguageProvider>
+        <div className="grain" aria-hidden="true" />
       </body>
     </html>
   );

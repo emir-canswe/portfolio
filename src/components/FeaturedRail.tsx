@@ -24,24 +24,24 @@ function Card({ index, onOpen }: { index: number; onOpen: (id: string) => void }
       data-card
       data-cursor="view"
       onClick={() => onOpen(p.id)}
-      className="group relative block aspect-[4/5] w-full flex-none overflow-hidden rounded-[16px] bg-smoke text-left transition-opacity duration-500 ease-expo will-change-transform s:h-[min(46svh,560px)] s:w-auto s:rounded-[20px]"
+      className="group relative block aspect-[4/5] w-full flex-none overflow-hidden rounded-[16px] bg-smoke text-left transition-opacity duration-500 ease-expo will-change-transform s:h-[min(64svh,calc(100svh_-_300px),760px)] s:w-auto s:rounded-[24px]"
       aria-label={p.title}
     >
       <div data-inner className="absolute inset-0 will-change-transform">
         <ProjectCover id={p.id} className="h-full w-full scale-[1.12] transition-transform duration-[1.2s] ease-expo group-hover:scale-[1.18]" />
       </div>
-      <div className="pointer-events-none absolute inset-x-3 top-3 flex justify-between text-[12px] mix-blend-difference s:inset-x-4 s:top-4">
+      <div className="pointer-events-none absolute inset-x-3 top-3 flex justify-between text-[12px] mix-blend-difference s:inset-x-5 s:top-5 s:text-[13px]">
         <span>{pad(index + 1)}</span>
         <span className="opacity-70">{p.category}</span>
       </div>
-      <div className="pointer-events-none absolute inset-x-3 bottom-3 flex items-end justify-between s:inset-x-4 s:bottom-4">
-        <span className="rounded-full bg-black px-3 py-1.5 text-[15px] tracking-tightest s:text-[17px]">{p.title}</span>
-        <span className="inline-flex size-8 items-center justify-center rounded-full bg-black text-[15px] transition-transform duration-500 ease-expo group-hover:rotate-90">
+      <div className="pointer-events-none absolute inset-x-3 bottom-3 flex items-end justify-between s:inset-x-5 s:bottom-5">
+        <span className="rounded-full bg-black px-3 py-1.5 text-[15px] tracking-tightest s:px-4 s:py-2 s:text-[20px]">{p.title}</span>
+        <span className="inline-flex size-8 items-center justify-center rounded-full bg-black text-[15px] s:size-10 s:text-[18px] transition-transform duration-500 ease-expo group-hover:rotate-90">
           +
         </span>
       </div>
       {p.award && (
-        <span className="pointer-events-none absolute left-3 top-10 rounded-full bg-white px-2.5 py-1 text-[11px] text-black s:left-4 s:top-11">
+        <span className="pointer-events-none absolute left-3 top-10 rounded-full bg-white px-2.5 py-1 text-[11px] text-black s:left-5 s:top-12 s:text-[12px]">
           {p.award[lang].replace(/^\S+\s/, '').replace(/\s*\(.*?\)/, '')}
         </span>
       )}
@@ -183,7 +183,7 @@ export default function FeaturedRail({ ready, onOpen }: RailProps) {
         const c = centers[i] - s.current;
         card.style.transform = `skewX(${skew}deg) scale(${scale})`;
         const inner = inners[i];
-        if (inner && !reduced) inner.style.transform = `translate3d(${((c - vw / 2) / vw) * -36}px,0,0)`;
+        if (inner && !reduced) inner.style.transform = `translate3d(${((c - vw / 2) / vw) * -60}px,0,0)`;
       });
       const progress = s.max ? s.current / s.max : 0;
       const nearest = Math.round(progress * (cards.length - 1));
@@ -214,7 +214,7 @@ export default function FeaturedRail({ ready, onOpen }: RailProps) {
   const cards = projects.map((p, i) => (
     <motion.div
       key={p.id}
-      className="s:h-[min(46svh,560px)]"
+      className="s:h-[min(64svh,calc(100svh_-_300px),760px)]"
       initial={{ opacity: 0, y: 80 }}
       animate={ready ? { opacity: 1, y: 0 } : { opacity: 0, y: 80 }}
       transition={{ duration: 1.4, delay: 0.15 + Math.min(i, 6) * 0.07, ease: [0.19, 1, 0.22, 1] }}
@@ -315,7 +315,7 @@ export default function FeaturedRail({ ready, onOpen }: RailProps) {
 
   return (
     <div ref={viewportRef} className="absolute inset-0 flex cursor-grab select-none items-center overflow-hidden pt-[7vh]">
-      <div ref={trackRef} className="rail flex w-max flex-none gap-2.5 px-10 will-change-transform">
+      <div ref={trackRef} className="rail flex w-max flex-none gap-6 px-10 will-change-transform">
         {cards}
       </div>
 

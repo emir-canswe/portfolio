@@ -16,35 +16,32 @@ interface RailProps {
   onOpen: (id: string) => void;
 }
 
+// Landscape ratios vary slightly card to card, like real screenshots would.
+const ratios = [1.75, 1.7, 1.74, 1.84, 1.53, 1.66, 1.78, 1.6, 1.72, 1.81];
+
 function Card({ index, onOpen }: { index: number; onOpen: (id: string) => void }) {
-  const { lang } = useLanguage();
   const p = projects[index];
   return (
     <button
       data-card
       data-cursor="view"
       onClick={() => onOpen(p.id)}
-      className="group relative block aspect-[4/5] w-full flex-none overflow-hidden rounded-[16px] bg-smoke text-left transition-opacity duration-500 ease-expo will-change-transform s:h-[min(64svh,calc(100svh_-_300px),760px)] s:w-auto s:rounded-[24px]"
+      style={{ aspectRatio: ratios[index % ratios.length] }}
+      className="group relative block w-full flex-none overflow-hidden rounded-[15px] bg-smoke text-left will-change-transform s:h-[min(43.5svh,550px)] s:w-auto s:rounded-[20px]"
       aria-label={p.title}
     >
       <div data-inner className="absolute inset-0 will-change-transform">
-        <ProjectCover id={p.id} className="h-full w-full scale-[1.12] transition-transform duration-[1.2s] ease-expo group-hover:scale-[1.18]" />
+        <ProjectCover id={p.id} className="h-full w-full scale-[1.1] transition-transform duration-[1.2s] ease-expo group-hover:scale-[1.15]" />
       </div>
-      <div className="pointer-events-none absolute inset-x-3 top-3 flex justify-between text-[12px] mix-blend-difference s:inset-x-5 s:top-5 s:text-[13px]">
-        <span>{pad(index + 1)}</span>
-        <span className="opacity-70">{p.category}</span>
-      </div>
-      <div className="pointer-events-none absolute inset-x-3 bottom-3 flex items-end justify-between s:inset-x-5 s:bottom-5">
-        <span className="rounded-full bg-black px-3 py-1.5 text-[15px] tracking-tightest s:px-4 s:py-2 s:text-[20px]">{p.title}</span>
-        <span className="inline-flex size-8 items-center justify-center rounded-full bg-black text-[15px] s:size-10 s:text-[18px] transition-transform duration-500 ease-expo group-hover:rotate-90">
+      <p className="pointer-events-none absolute inset-x-[10px] bottom-[10px] flex items-end justify-between s:inset-x-5">
+        <span className="whitespace-nowrap text-[16px] tracking-[-0.05em] mix-blend-difference s:text-[18px]">{p.title}</span>
+        <span
+          aria-hidden="true"
+          className="inline-flex size-[25px] scale-0 items-center justify-center rounded-full bg-black text-[14px] text-white transition-transform duration-500 ease-expo group-hover:scale-100 group-focus-visible:scale-100"
+        >
           +
         </span>
-      </div>
-      {p.award && (
-        <span className="pointer-events-none absolute left-3 top-10 rounded-full bg-white px-2.5 py-1 text-[11px] text-black s:left-5 s:top-12 s:text-[12px]">
-          {p.award[lang].replace(/^\S+\s/, '').replace(/\s*\(.*?\)/, '')}
-        </span>
-      )}
+      </p>
     </button>
   );
 }
@@ -100,6 +97,8 @@ export default function FeaturedRail({ ready, onOpen }: RailProps) {
     };
   }, [desktop, ready]);
 
+  // Desktop: endless horizontal rail — wheel, drag and arrow keys all feed one eased offset,
+  // and each card wraps around the loop on its own so there's never an end.
   useEffect(() => {
     if (!desktop) return;
     const viewport = viewportRef.current;
@@ -110,24 +109,27 @@ export default function FeaturedRail({ ready, onOpen }: RailProps) {
     const inners = cards.map((c) => c.querySelector<HTMLElement>('[data-inner]'));
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const s = { target: 0, current: 0, max: 0, dragging: false, startX: 0, startTarget: 0, moved: 0, active: -1 };
-    let centers: number[] = [];
+    const s = { target: 0, current: 0, dragging: false, startX: 0, startTarget: 0, moved: 0, active: -1 };
+    let lefts: number[] = [];
+    let widths: number[] = [];
+    let loop = 1;
     let step = 0;
 
     const measure = () => {
-      s.max = Math.max(0, track.scrollWidth - window.innerWidth);
-      s.target = clamp(s.target, 0, s.max);
-      // Measure the motion wrappers: they're transformed, so they're the cards' offsetParent.
+      // Measure the motion wrappers: their offsets aren't affected by the per-card transforms.
       const slots = cards.map((c) => c.parentElement ?? c);
-      centers = slots.map((el) => el.offsetLeft + el.offsetWidth / 2);
-      step = slots.length > 1 ? slots[1].offsetLeft - slots[0].offsetLeft : 0;
+      lefts = slots.map((el) => el.offsetLeft);
+      widths = slots.map((el) => el.offsetWidth);
+      const gap = slots.length > 1 ? lefts[1] - lefts[0] - widths[0] : 0;
+      loop = Math.max(1, track.scrollWidth + gap);
+      step = loop / slots.length;
     };
     measure();
 
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
       const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-      s.target = clamp(s.target + d * (e.deltaMode === 1 ? 30 : 1), 0, s.max);
+      s.target += d * (e.deltaMode === 1 ? 30 : 1);
     };
     const onDown = (e: PointerEvent) => {
       if (e.button !== 0) return;
@@ -141,7 +143,7 @@ export default function FeaturedRail({ ready, onOpen }: RailProps) {
       if (!s.dragging) return;
       const dx = e.clientX - s.startX;
       s.moved = Math.max(s.moved, Math.abs(dx));
-      s.target = clamp(s.startTarget - dx * 1.6, 0, s.max);
+      s.target = s.startTarget - dx * 1.6;
     };
     const onUp = () => {
       s.dragging = false;
@@ -155,8 +157,8 @@ export default function FeaturedRail({ ready, onOpen }: RailProps) {
       }
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight') s.target = clamp(s.target + step, 0, s.max);
-      if (e.key === 'ArrowLeft') s.target = clamp(s.target - step, 0, s.max);
+      if (e.key === 'ArrowRight') s.target += step;
+      if (e.key === 'ArrowLeft') s.target -= step;
     };
 
     viewport.addEventListener('wheel', onWheel, { passive: false });
@@ -168,34 +170,42 @@ export default function FeaturedRail({ ready, onOpen }: RailProps) {
     window.addEventListener('resize', measure);
 
     let raf = 0;
-    const loop = () => {
+    const tick = () => {
       const prev = s.current;
       s.current += (s.target - s.current) * (reduced ? 1 : 0.085);
       if (Math.abs(s.target - s.current) < 0.05) s.current = s.target;
       const vel = s.current - prev;
       const vw = window.innerWidth;
 
-      track.style.transform = `translate3d(${-s.current}px,0,0)`;
-      const skew = reduced ? 0 : clamp(vel * -0.06, -6, 6);
-      const scale = reduced ? 1 : 1 - clamp(Math.abs(vel) * 0.0015, 0, 0.06);
+      const skew = reduced ? 0 : clamp(vel * -0.05, -5, 5);
+      const scale = reduced ? 1 : 1 - clamp(Math.abs(vel) * 0.0012, 0, 0.05);
 
+      let nearest = 0;
+      let best = Infinity;
       cards.forEach((card, i) => {
-        const c = centers[i] - s.current;
-        card.style.transform = `skewX(${skew}deg) scale(${scale})`;
+        // Wrap each card into [-width, loop - width) so it re-enters from the right.
+        const raw = lefts[i] - s.current;
+        const x = ((((raw + widths[i]) % loop) + loop) % loop) - widths[i];
+        card.style.transform = `translate3d(${x - lefts[i]}px,0,0) skewX(${skew}deg) scale(${scale})`;
+        const c = x + widths[i] / 2;
         const inner = inners[i];
-        if (inner && !reduced) inner.style.transform = `translate3d(${((c - vw / 2) / vw) * -60}px,0,0)`;
+        if (inner && !reduced) inner.style.transform = `translate3d(${((c - vw / 2) / vw) * -50}px,0,0)`;
+        const dist = Math.abs(c - vw / 2);
+        if (dist < best) {
+          best = dist;
+          nearest = i;
+        }
       });
-      const progress = s.max ? s.current / s.max : 0;
-      const nearest = Math.round(progress * (cards.length - 1));
 
+      const progress = ((s.current % loop) + loop) % loop / loop;
       if (barRef.current) barRef.current.style.transform = `scaleX(${progress})`;
       if (nearest !== s.active) {
         s.active = nearest;
         setActive(nearest);
       }
-      raf = requestAnimationFrame(loop);
+      raf = requestAnimationFrame(tick);
     };
-    raf = requestAnimationFrame(loop);
+    raf = requestAnimationFrame(tick);
 
     return () => {
       cancelAnimationFrame(raf);
@@ -206,7 +216,6 @@ export default function FeaturedRail({ ready, onOpen }: RailProps) {
       viewport.removeEventListener('click', onClick, true);
       window.removeEventListener('keydown', onKey);
       window.removeEventListener('resize', measure);
-      track.style.transform = '';
       cards.forEach((c) => (c.style.transform = ''));
     };
   }, [desktop]);
@@ -214,10 +223,10 @@ export default function FeaturedRail({ ready, onOpen }: RailProps) {
   const cards = projects.map((p, i) => (
     <motion.div
       key={p.id}
-      className="s:h-[min(64svh,calc(100svh_-_300px),760px)]"
-      initial={{ opacity: 0, y: 80 }}
-      animate={ready ? { opacity: 1, y: 0 } : { opacity: 0, y: 80 }}
-      transition={{ duration: 1.4, delay: 0.15 + Math.min(i, 6) * 0.07, ease: [0.19, 1, 0.22, 1] }}
+      className="s:h-[min(43.5svh,550px)]"
+      initial={{ opacity: 0, x: 240 }}
+      animate={ready ? { opacity: 1, x: 0 } : { opacity: 0, x: 240 }}
+      transition={{ duration: 1.6, delay: 0.1 + Math.min(i, 5) * 0.08, ease: [0.19, 1, 0.22, 1] }}
     >
       <Card index={i} onOpen={onOpen} />
     </motion.div>
@@ -248,12 +257,12 @@ export default function FeaturedRail({ ready, onOpen }: RailProps) {
         </motion.div>
 
         {ready && (
-          <div className="rail mt-3 flex flex-col gap-3">
+          <div className="mt-3 flex flex-col gap-5">
             {projects.map((p, i) => (
               <motion.div
                 key={p.id}
-                initial={{ clipPath: 'inset(14% 5% 0% 5% round 16px)', y: 60, opacity: 0.2 }}
-                whileInView={{ clipPath: 'inset(0% 0% 0% 0% round 16px)', y: 0, opacity: 1 }}
+                initial={{ clipPath: 'inset(14% 5% 0% 5% round 15px)', y: 60, opacity: 0.2 }}
+                whileInView={{ clipPath: 'inset(0% 0% 0% 0% round 15px)', y: 0, opacity: 1 }}
                 viewport={{ once: true, margin: '0px 0px -12% 0px' }}
                 transition={{ duration: 1.2, ease: [0.19, 1, 0.22, 1] }}
                 className="active:scale-[0.98] transition-transform duration-300"
@@ -314,8 +323,8 @@ export default function FeaturedRail({ ready, onOpen }: RailProps) {
   }
 
   return (
-    <div ref={viewportRef} className="absolute inset-0 flex cursor-grab select-none items-center overflow-hidden pt-[7vh]">
-      <div ref={trackRef} className="rail flex w-max flex-none gap-6 px-10 will-change-transform">
+    <div ref={viewportRef} className="absolute inset-0 flex cursor-grab select-none items-center overflow-hidden">
+      <div ref={trackRef} className="flex w-max flex-none gap-[10px]">
         {cards}
       </div>
 
